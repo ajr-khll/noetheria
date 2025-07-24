@@ -1,4 +1,4 @@
 .env
-site_texts
-downloaded_pdfs
-converted_pdfs
+site_texts/
+downloaded_pdfs/
+converted_pdfs/
