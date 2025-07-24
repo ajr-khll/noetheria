@@ -23,12 +23,4 @@ def prompt_optimization(unfiltered_prompt: str) -> str:
     return response.content.strip()
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        f = open(sys.argv[1], "r")
-        unfiltered_prompt = f.read()
-        f.close()
-    else:
-        # Default unfiltered prompt if none is provided 
-        unfiltered_prompt = "Write a story about a hero."
-    optimized_prompt = prompt_optimization(unfiltered_prompt)
-    print(f"Optimized Prompt: {optimized_prompt}")
+    pass

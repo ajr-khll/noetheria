@@ -4,27 +4,27 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
 import google_search
 import site_loader
+import prompt_optimizer
+import json
 
 load_dotenv()
 
 prompt = input("Enter Prompt: ")
 
 
-google_queries = subprocess.run(
-    ['python', 'prompt_optimizer.py', prompt],
-    capture_output=True,
-    text=True
-)
+google_queries = prompt_optimizer.prompt_optimization(prompt)
+print(f"\nOptimized Google Search Queries:\n{google_queries.strip()}")
 
 
-queries = [q.strip() for q in google_queries.stdout.strip().split('\n') if q.strip()]
+queries = [q.strip() for q in google_queries.strip().split('\n') if q.strip()]
+
 
 
 def fetch_links(query):
     print(f"Fetching links for query: {query}")
     return google_search.fetch_google_search_links(query)
 
-all_links = set() 
+all_links = set()
 
 with ThreadPoolExecutor(max_workers=5) as executor:
     futures = [executor.submit(fetch_links, q) for q in queries]
@@ -41,6 +41,7 @@ def load_site(url):
         print(f"Saved: {url}")
     else:
         print(f"Failed: {url}")
+
 
 print(f"\nStarting to download {len(all_links)} unique links...\n")
 
