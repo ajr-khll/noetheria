@@ -4,10 +4,12 @@ from dotenv import load_dotenv
 import mimetypes
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import LETTER
+import sys
+import io
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 # Directories
 PDF_DIR = "downloaded_pdfs"
 TEXT_DIR = "site_texts"
@@ -43,7 +45,7 @@ def convert_txt_to_pdf(txt_path):
                 y = height - 40
 
         c.save()
-        print(f"📝 Converted: {txt_path} → {pdf_path}")
+        print(f" Converted: {txt_path} → {pdf_path}")
         return pdf_path
     except Exception as e:
         print(f"❌ Failed to convert {txt_path} to PDF: {e}")
@@ -52,7 +54,7 @@ def convert_txt_to_pdf(txt_path):
 def upload_file(filepath):
     try:
         filename = os.path.basename(filepath)
-        print(f"📤 Uploading: {filename}")
+        print(f" Uploading: {filename}")
 
         mime_type, _ = mimetypes.guess_type(filename)
         if mime_type is None:
@@ -65,7 +67,7 @@ def upload_file(filepath):
             )
 
         file_id = response.id
-        print(f"✅ Uploaded: {filename} → ID: {file_id}")
+        print(f"Uploaded: {filename} → ID: {file_id}")
         return file_id
     except Exception as e:
         print(f"❌ Failed to upload {filepath}: {e}")
@@ -73,12 +75,12 @@ def upload_file(filepath):
 
 def add_to_vector_store(file_id):
     try:
-        print(f"📎 Adding to vector store: {file_id}")
+        print(f"Adding to vector store: {file_id}")
         result = openai.vector_stores.files.create(
             vector_store_id=vector_store_id,
             file_id=file_id
         )
-        print(f"✅ Added to vector store: {file_id}")
+        print(f"Added to vector store: {file_id}")
     except Exception as e:
         print(f"❌ Failed to add to vector store: {e}")
 
@@ -110,4 +112,4 @@ def collect_and_process_files():
         for fid in uploaded_file_ids:
             f.write(f"{fid}\n")
 
-    print(f"\n🗃️ Uploaded and added {len(uploaded_file_ids)} files to vector store '{vector_store_id}'.")
+    print(f"\n Uploaded and added {len(uploaded_file_ids)} files to vector store '{vector_store_id}'.")

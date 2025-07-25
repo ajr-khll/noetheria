@@ -63,7 +63,6 @@ def fetch_page_content(url):
             try:
                 with open(path, "wb") as f:
                     f.write(response.content)
-                save_to_jsonl({"url": url, "file": path, "type": "pdf"})
                 return f"Saved PDF: {path}"
             except Exception as e:
                 print(f"[ERROR] Saving PDF: {e}")
@@ -84,16 +83,6 @@ def fetch_page_content(url):
                 raw_text = soup.get_text(separator=" ", strip=True)
                 text = ' '.join(raw_text.split())
                 file_path = save_text_to_file(url, text)
-                if file_path:
-                    save_to_jsonl({
-                        "url": url,
-                        "file": file_path,
-                        "title": clean_title,
-                        "type": "html"
-                    })
-                    return f"Saved main content from: {file_path}"
-                else:
-                    return None
             except Exception as e:
                 print(f"[ERROR] Extracting and saving HTML text: {e}")
                 return None
