@@ -13,7 +13,7 @@ with open("vector_store_id.txt", "r") as f:
 
 assistant = openai.beta.assistants.create(
     name="Web Search Answer Bot",
-    instructions="Answer the user's query by using as many different uploaded sources as possible. Cite multiple documents when relevant, and avoid relying solely on one file unless necessary.",
+    instructions="Answer the user's query by using as many different uploaded sources as possible. Cite multiple documents when relevant, and avoid relying solely on one file unless necessary. Don't start conclusions with 'In conclusion' or similar phrases. If the user asks for a specific file, provide it directly.",
     tools=[{"type": "file_search"}],
     model="gpt-4o",
     tool_resources={"file_search": {"vector_store_ids": [vector_store_id]}}

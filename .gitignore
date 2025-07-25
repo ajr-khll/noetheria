@@ -2,3 +2,4 @@
 site_texts/
 downloaded_pdfs/
 converted_pdfs/
+__pycache__/

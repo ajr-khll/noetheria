@@ -83,30 +83,31 @@ def add_to_vector_store(file_id):
         print(f"❌ Failed to add to vector store: {e}")
 
 # Collect and process all files
-all_files = []
+def collect_and_process_files():
+    all_files = []
 
-for folder in [PDF_DIR, TEXT_DIR]:
-    if os.path.exists(folder):
-        for filename in os.listdir(folder):
-            full_path = os.path.join(folder, filename)
-            if os.path.isfile(full_path):
-                if folder == TEXT_DIR and filename.endswith(".txt"):
-                    pdf_path = convert_txt_to_pdf(full_path)
-                    if pdf_path:
-                        all_files.append(pdf_path)
-                else:
-                    all_files.append(full_path)
+    for folder in [PDF_DIR, TEXT_DIR]:
+        if os.path.exists(folder):
+            for filename in os.listdir(folder):
+                full_path = os.path.join(folder, filename)
+                if os.path.isfile(full_path):
+                    if folder == TEXT_DIR and filename.endswith(".txt"):
+                        pdf_path = convert_txt_to_pdf(full_path)
+                        if pdf_path:
+                            all_files.append(pdf_path)
+                    else:
+                        all_files.append(full_path)
 
-# Upload and add to vector store
-for path in all_files:
-    file_id = upload_file(path)
-    if file_id:
-        uploaded_file_ids.append(file_id)
-        add_to_vector_store(file_id)
+    # Upload and add to vector store
+    for path in all_files:
+        file_id = upload_file(path)
+        if file_id:
+            uploaded_file_ids.append(file_id)
+            add_to_vector_store(file_id)
 
-# Save uploaded file IDs
-with open("uploaded_file_ids.txt", "w") as f:
-    for fid in uploaded_file_ids:
-        f.write(f"{fid}\n")
+    # Save uploaded file IDs
+    with open("uploaded_file_ids.txt", "w") as f:
+        for fid in uploaded_file_ids:
+            f.write(f"{fid}\n")
 
-print(f"\n🗃️ Uploaded and added {len(uploaded_file_ids)} files to vector store '{vector_store_id}'.")
+    print(f"\n🗃️ Uploaded and added {len(uploaded_file_ids)} files to vector store '{vector_store_id}'.")
