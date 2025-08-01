@@ -14,7 +14,8 @@ const getFontSizeClass = (length: number) => {
 };
 
 const createSession = async (initial_question: string) => {
-  const res = await fetch("http://localhost:5000/session", {
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+  const res = await fetch(`${baseUrl}/session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ initial_question }),
@@ -72,7 +73,8 @@ export default function ChatThread() {
   }, [eventSourceCleanup]);
 
   const fetchLinks = async (id: string) => {
-    const res = await fetch(`http://localhost:5000/session/${id}/get_links`);
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    const res = await fetch(`${baseUrl}/session/${id}/get_links`);
     
     if (!res.ok) return;
 
@@ -85,15 +87,16 @@ export default function ChatThread() {
   };
 
   const startSiteDownload = async (id: string, links: string[]) => {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
     console.log("📦 Sending links:", links);
   
-    await fetch(`http://localhost:5000/session/${id}/download_sites`, {
+    await fetch(`${baseUrl}/session/${id}/download_sites`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ links }),
     });
   
-    const eventSource = new EventSource(`http://localhost:5000/session/${id}/progress_stream`);
+    const eventSource = new EventSource(`${baseUrl}/session/${id}/progress_stream`);
     eventSource.onmessage = (event) => {
       if (event.data === "__done__") {
         eventSource.close();
@@ -111,8 +114,9 @@ export default function ChatThread() {
   
   const submitAnswer = async (answer: string, idx: number) => {
     if (!sessionId) return;
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
-    const res = await fetch("http://localhost:5000/answer", {
+    const res = await fetch(`${baseUrl}/answer`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -135,10 +139,11 @@ export default function ChatThread() {
   };
 
   const startDeepResearch = async (id: string) => {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
     setIsResearching(true);
     setFinalResult(""); // clear any previous results
   
-    const res = await fetch(`http://localhost:5000/session/${id}/deep_research`, {
+    const res = await fetch(`${baseUrl}/session/${id}/deep_research`, {
       method: "POST",
     });
   
@@ -160,7 +165,7 @@ export default function ChatThread() {
   
     // ✅ Step 2: After stream finishes, fetch the formatted result
     try {
-      const formattedRes = await fetch(`http://localhost:5000/session/${id}/formatted_response`);
+      const formattedRes = await fetch(`${baseUrl}/session/${id}/formatted_response`);
       const data = await formattedRes.json();
   
       if (data.formatted) {

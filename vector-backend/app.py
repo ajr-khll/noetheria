@@ -29,7 +29,17 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///chat_sessions.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-CORS(app, origins=["http://localhost:3000"])
+# CORS configuration for production
+allowed_origins = [
+    "http://localhost:3000",  # Local development
+    "https://your-app.vercel.app",  # Replace with your Vercel domain
+]
+
+# Add environment variable for additional origins
+if os.getenv("FRONTEND_URL"):
+    allowed_origins.append(os.getenv("FRONTEND_URL"))
+
+CORS(app, origins=allowed_origins)
 
 db.init_app(app)
 migrate = Migrate(app, db)
