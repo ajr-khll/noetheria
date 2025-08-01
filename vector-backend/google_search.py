@@ -1,7 +1,6 @@
 import os
 import httpx
 import sys
-import pandas as pd
 from dotenv import load_dotenv
 from urllib.parse import urlparse
 from cache_config import cache, CacheTypes
