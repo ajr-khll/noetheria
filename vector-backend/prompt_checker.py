@@ -17,7 +17,7 @@ class ResearchCompliance(BaseModel):
 
 def check_prompt(prompt):
     response = client.responses.parse(
-        model="gpt-4.1",
+        model="gpt-4o",
         input=[
             {"role": "system", "content": """Determine whether the prompt has significant depth and complexity that requires further research or follow-up questions. 
              If the prompt is basic, respond normally as a helpful assistant.
