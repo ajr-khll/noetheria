@@ -3,7 +3,6 @@ from openai import OpenAI
 import os
 import time
 from dotenv import load_dotenv
-from typing import override
 from openai import AssistantEventHandler
 
 

@@ -29,11 +29,12 @@ class RedisCache:
             self.redis_client.ping()
             print("✅ Redis connected successfully")
         except redis.ConnectionError as e:
-            print(f"❌ Redis connection failed: {e}")
-            print("💡 Make sure Redis is running. See setup instructions below.")
+            print(f"⚠️ Redis not available: {e}")
+            print("ℹ️ App will continue without caching - performance may be slower")
             self.redis_client = None
         except Exception as e:
-            print(f"❌ Unexpected Redis error: {e}")
+            print(f"⚠️ Redis connection error: {e}")
+            print("ℹ️ App will continue without caching")
             self.redis_client = None
     
     def _generate_key(self, cache_type: str, identifier: str) -> str:
