@@ -11,5 +11,7 @@ redis
 pandas
 google-auth
 google-auth-oauthlib
+readability-lxml
+lxml
 
 
