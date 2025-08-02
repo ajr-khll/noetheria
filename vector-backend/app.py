@@ -32,12 +32,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # CORS configuration for production
 allowed_origins = [
     "http://localhost:3000",  # Local development
-    "https://your-app.vercel.app",  # Replace with your Vercel domain
 ]
 
-# Add environment variable for additional origins
-if os.getenv("FRONTEND_URL"):
-    allowed_origins.append(os.getenv("FRONTEND_URL"))
+# Add environment variable for frontend URL
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+    print(f"✅ CORS enabled for: {frontend_url}")
+else:
+    print("⚠️ FRONTEND_URL not set - add your Vercel URL to Railway environment variables")
 
 CORS(app, origins=allowed_origins)
 
