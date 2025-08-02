@@ -92,8 +92,8 @@ export default function ChatThread() {
         
         if (data.followups && data.followups.length > 0) {
           setIsFollowUp(true);
-          setFollowUpQuestions(data.followups.map((f: any) => f.question));
-          setAnswers(data.followups.map((f: any) => f.answer));
+          setFollowUpQuestions(data.followups.map((f: { question: string; answer: string }) => f.question));
+          setAnswers(data.followups.map((f: { question: string; answer: string }) => f.answer));
           setCurrentStep(data.followups.length);
         } else {
           setIsFollowUp(false);
