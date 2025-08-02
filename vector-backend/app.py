@@ -1,40 +1,38 @@
 import re
-from flask import Flask, request, jsonify
-from models import ChatSession, FollowUp, db
-from flask import stream_with_context, Response
-import uuid
-import os
-import prompt_checker
-from utils import format_llm_prompt
-import prompt_optimizer
-import google_search
-from threading import Thread
-import site_loader
-import deep_research
-import vector_store_modification
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from queue import Queue
-# from flask_cors import CORS  # Disabled to avoid duplicate headers
 import sys
 import time
-import format_response
+import uuid
+import os
+from queue import Queue
+from threading import Thread
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_migrate import Migrate
 from openai import OpenAI
 from dotenv import load_dotenv
+
+from models import ChatSession, FollowUp, db
+import prompt_checker
+import prompt_optimizer
+import google_search
+import site_loader
+import deep_research
+import vector_store_modification
+from utils import format_llm_prompt
+import format_response
+
 load_dotenv()
-# Initialize OpenAI client
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-# Initialize Flask app and database
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///chat_sessions.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# CORS configuration for production
+
 allowed_origins = [
-    "http://localhost:3000",  # Local development
+    "http://localhost:3000",
 ]
 
-# Add environment variable for frontend URL
 frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url:
     allowed_origins.append(frontend_url)
@@ -42,31 +40,31 @@ if frontend_url:
 else:
     print("⚠️ FRONTEND_URL not set - add your Vercel URL to Railway environment variables")
 
-# CORS handled manually below to avoid duplicate headers
-
-# Manual CORS handler for preflight requests
 @app.before_request
 def handle_preflight():
     if request.method == "OPTIONS":
-        response = jsonify()
-        response.headers.add("Access-Control-Allow-Origin", "https://vector-ecru.vercel.app")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-        response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
-        response.headers.add("Access-Control-Allow-Credentials", "true")
-        return response
+        response = Response()
+        origin = request.headers.get("Origin", "")
+        if origin in allowed_origins:
+            response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Headers'] = "Content-Type,Authorization"
+        response.headers['Access-Control-Allow-Methods'] = "GET,POST,OPTIONS"
+        response.headers['Access-Control-Allow-Credentials'] = "true"
+        return response, 200
 
 @app.after_request
-def after_request(response):
-    response.headers.add("Access-Control-Allow-Origin", "https://vector-ecru.vercel.app")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
-    response.headers.add("Access-Control-Allow-Credentials", "true")
+def apply_cors(response):
+    origin = request.headers.get("Origin", "")
+    if origin in allowed_origins:
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Headers'] = "Content-Type,Authorization"
+        response.headers['Access-Control-Allow-Methods'] = "GET,POST,OPTIONS"
+        response.headers['Access-Control-Allow-Credentials'] = "true"
     return response
 
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# Handle missing files gracefully in production
 try:
     with open("vector_store_id.txt", "r") as f:
         vector_store_id = f.read().strip()
@@ -81,8 +79,7 @@ except FileNotFoundError:
     print("⚠️ assistant_id.txt not found - some features may not work")
     assistant_id = "default-assistant-id"
 
-# Global dictionary to store queues for each session's streaming progress
-site_progress_queues = {}  # session_id -> Queue
+site_progress_queues = {}
 full_response_text = ""
 
 def fetch_links(query):
@@ -90,20 +87,16 @@ def fetch_links(query):
     return google_search.fetch_google_search_links(query)
 
 def clean_query(q: str) -> str:
-    # Removes leading numbering and surrounding quotes
     q = re.sub(r'^\d+\.\s*', '', q)
     return q.strip().strip('"')
 
-
 @app.route('/')
 def health_check():
-    """Health check endpoint for Railway deployment"""
     return jsonify({
         "status": "healthy",
         "app": "Vector Backend",
         "version": "1.0.0"
     })
-
 
 @app.route('/session', methods=['POST'])
 def create_session():
@@ -123,11 +116,7 @@ def create_session():
     if is_followup_mode:
         followups = prompt_validation.follow_up or []
         for i, fq in enumerate(followups):
-            db.session.add(FollowUp(
-                session_id=session.id,
-                question=fq,
-                order=i
-            ))
+            db.session.add(FollowUp(session_id=session.id, question=fq, order=i))
         db.session.commit()
         return jsonify({
             "session_id": session.id,
@@ -142,7 +131,6 @@ def create_session():
             "mode": "short",
             "short_answer": session.short_answer
         })
-
 
 @app.route('/answer', methods=['POST'])
 def submit_answer():
@@ -160,9 +148,7 @@ def submit_answer():
 
     followup.answer = answer
     db.session.commit()
-
     return jsonify({"message": "Answer saved successfully"})
-
 
 @app.route('/session/<session_id>/full', methods=['GET'])
 def get_full_session(session_id):
@@ -180,7 +166,6 @@ def get_full_session(session_id):
         "followups": followups_data
     })
 
-
 @app.route('/session/<session_id>/get_links', methods=['GET'])
 def get_links(session_id):
     session = ChatSession.query.filter_by(id=session_id).first()
@@ -189,7 +174,6 @@ def get_links(session_id):
 
     formatted_prompt = format_llm_prompt(session)
     searches = prompt_optimizer.prompt_optimization(unfiltered_prompt=formatted_prompt)
-
     raw_queries = [q.strip() for q in searches.strip().split('\n') if q.strip()]
     queries = [clean_query(q) for q in raw_queries]
 
@@ -205,7 +189,6 @@ def get_links(session_id):
 
     return jsonify({"links": list(all_links)})
 
-
 @app.route('/session/<session_id>/download_sites', methods=['POST'])
 def download_sites(session_id):
     session = ChatSession.query.filter_by(id=session_id).first()
@@ -218,7 +201,6 @@ def download_sites(session_id):
         return jsonify({"error": "No links provided"}), 400
 
     print(f"[DOWNLOAD] Downloading {len(links)} links", flush=True)
-
     q = Queue()
     site_progress_queues[session_id] = q
 
@@ -238,7 +220,6 @@ def download_sites(session_id):
 
         print(f"[THREAD] Done loading for {session_id}", flush=True)
 
-        # ✅ Run vector store logic only after downloads complete
         try:
             vector_store_modification.collect_and_process_files()
             print(f"[THREAD] Vector store update complete", flush=True)
@@ -248,9 +229,7 @@ def download_sites(session_id):
         q.put("__done__")
 
     Thread(target=site_loader_thread).start()
-
     return jsonify({"message": "Site loading started."}), 202
-
 
 @app.route('/session/<session_id>/progress_stream')
 def stream_progress(session_id):
@@ -265,12 +244,10 @@ def stream_progress(session_id):
             yield f"data: {update}\n\n"
             sys.stdout.flush()
             time.sleep(0.01)
-
             if update == "__done__":
                 break
 
     return Response(stream_with_context(generate()), mimetype='text/event-stream')
-
 
 @app.route('/session/<session_id>/deep_research', methods=['POST'])
 def deep_research_session(session_id):
@@ -279,14 +256,7 @@ def deep_research_session(session_id):
         return jsonify({"error": "Session not found"}), 404
 
     formatted_prompt = format_llm_prompt(session)
-
-    # Get both thread_id and stream
-    thread_id, response_stream = deep_research.run_deep_research(
-        prompt=formatted_prompt,
-        assistant_id=assistant_id,
-    )
-
-    # ✅ Save thread_id to session
+    thread_id, response_stream = deep_research.run_deep_research(prompt=formatted_prompt, assistant_id=assistant_id)
     session.thread_id = thread_id
     db.session.commit()
 
@@ -310,25 +280,17 @@ def get_formatted_response(session_id):
         return jsonify({"error": "Session not found or thread not started"}), 404
 
     try:
-        # Retrieve messages from the thread
         messages = client.beta.threads.messages.list(thread_id=session.thread_id)
-
         if not messages.data:
             return jsonify({"error": "No messages found for thread"}), 404
 
-        # Use the most recent message (adjust index if needed)
         latest_message = messages.data[0]
-
-        # Replace citation placeholders with actual filenames
         formatted_output = format_response.replace_citation_placeholders(latest_message)
-
         print(f"[FORMAT] Final output: {formatted_output}", flush=True)
         return jsonify({"formatted": formatted_output})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
