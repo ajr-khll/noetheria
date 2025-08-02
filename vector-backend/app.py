@@ -42,7 +42,11 @@ if frontend_url:
 else:
     print("⚠️ FRONTEND_URL not set - add your Vercel URL to Railway environment variables")
 
-CORS(app, origins=allowed_origins)
+CORS(app, 
+     origins=allowed_origins,
+     allow_headers=['Content-Type', 'Authorization'],
+     methods=['GET', 'POST', 'OPTIONS'],
+     supports_credentials=True)
 
 db.init_app(app)
 migrate = Migrate(app, db)
