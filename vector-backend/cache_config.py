@@ -27,14 +27,14 @@ class RedisCache:
             )
             # Test connection
             self.redis_client.ping()
-            print("✅ Redis connected successfully")
+            print("[OK] Redis connected successfully")
         except redis.ConnectionError as e:
-            print(f"⚠️ Redis not available: {e}")
-            print("ℹ️ App will continue without caching - performance may be slower")
+            print(f"[WARNING] Redis not available: {e}")
+            print("[INFO] App will continue without caching - performance may be slower")
             self.redis_client = None
         except Exception as e:
-            print(f"⚠️ Redis connection error: {e}")
-            print("ℹ️ App will continue without caching")
+            print(f"[WARNING] Redis connection error: {e}")
+            print("[INFO] App will continue without caching")
             self.redis_client = None
     
     def _generate_key(self, cache_type: str, identifier: str) -> str:
@@ -54,7 +54,7 @@ class RedisCache:
                 return json.loads(cached_data)
             return None
         except (redis.RedisError, json.JSONDecodeError) as e:
-            print(f"Cache get error: {e}")
+            print(f"[WARNING] Cache get error: {e}")
             return None
     
     def set(self, cache_type: str, identifier: str, data: Any, ttl_seconds: int = 86400):
@@ -68,7 +68,7 @@ class RedisCache:
             self.redis_client.setex(cache_key, ttl_seconds, serialized_data)
             return True
         except (redis.RedisError, json.JSONEncodeError) as e:
-            print(f"Cache set error: {e}")
+            print(f"[WARNING] Cache set error: {e}")
             return False
     
     def delete(self, cache_type: str, identifier: str) -> bool:
@@ -80,7 +80,7 @@ class RedisCache:
             cache_key = self._generate_key(cache_type, identifier)
             return bool(self.redis_client.delete(cache_key))
         except redis.RedisError as e:
-            print(f"Cache delete error: {e}")
+            print(f"[WARNING] Cache delete error: {e}")
             return False
     
     def clear_cache_type(self, cache_type: str) -> int:
@@ -95,7 +95,7 @@ class RedisCache:
                 return self.redis_client.delete(*keys)
             return 0
         except redis.RedisError as e:
-            print(f"Cache clear error: {e}")
+            print(f"[WARNING] Cache clear error: {e}")
             return 0
     
     def get_stats(self) -> dict:

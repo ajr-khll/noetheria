@@ -11,3 +11,6 @@ redis
 httpx
 readability-lxml
 reportlab
+lxml
+alembic
+gunicorn

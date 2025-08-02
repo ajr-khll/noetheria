@@ -30,3 +30,10 @@ html,
 body {
   @apply bg-zinc-900 text-white;
 }
+
+/* Mobile-first responsive font sizing */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px; /* Smaller base font size on mobile */
+  }
+}

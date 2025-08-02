@@ -1,10 +1,11 @@
 import re
-from flask import Flask, request, jsonify
-from models import ChatSession, FollowUp, db
+from flask import Flask, request, jsonify, g
+from models import User, ChatSession, FollowUp, db
 from flask import stream_with_context, Response
 import uuid
 import os
 import prompt_checker
+from auth import require_auth, optional_auth
 from utils import format_llm_prompt
 import prompt_optimizer
 import google_search
@@ -14,7 +15,7 @@ import deep_research
 import vector_store_modification
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue
-# from flask_cors import CORS  # Disabled to avoid duplicate headers
+from flask_cors import CORS
 import sys
 import time
 import format_response
@@ -29,39 +30,23 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///chat_sessions.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# CORS configuration for production
+
+# Setup CORS
 allowed_origins = [
-    "http://localhost:3000",  # Local development
+    "http://localhost:3000",
 ]
 
-# Add environment variable for frontend URL
 frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url:
     allowed_origins.append(frontend_url)
-    print(f"✅ CORS enabled for: {frontend_url}")
+    print(f"[OK] CORS enabled for: {frontend_url}")
 else:
-    print("⚠️ FRONTEND_URL not set - add your Vercel URL to Railway environment variables")
+    print("[WARNING] FRONTEND_URL not set - add your Vercel URL to Railway environment variables")
 
+CORS(app, origins=allowed_origins, supports_credentials=True)
 # CORS handled manually below to avoid duplicate headers
 
-# Manual CORS handler for preflight requests
-@app.before_request
-def handle_preflight():
-    if request.method == "OPTIONS":
-        response = jsonify()
-        response.headers.add("Access-Control-Allow-Origin", "https://vector-ecru.vercel.app")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-        response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
-        response.headers.add("Access-Control-Allow-Credentials", "true")
-        return response
 
-@app.after_request
-def after_request(response):
-    response.headers.add("Access-Control-Allow-Origin", "https://vector-ecru.vercel.app")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
-    response.headers.add("Access-Control-Allow-Credentials", "true")
-    return response
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -71,14 +56,14 @@ try:
     with open("vector_store_id.txt", "r") as f:
         vector_store_id = f.read().strip()
 except FileNotFoundError:
-    print("⚠️ vector_store_id.txt not found - some features may not work")
+    print("[WARNING] vector_store_id.txt not found - some features may not work")
     vector_store_id = "default-store-id"
 
 try:
     with open("assistant_id.txt", "r") as f:
         assistant_id = f.read().strip()
 except FileNotFoundError:
-    print("⚠️ assistant_id.txt not found - some features may not work")
+    print("[WARNING] assistant_id.txt not found - some features may not work")
     assistant_id = "default-assistant-id"
 
 # Global dictionary to store queues for each session's streaming progress
@@ -106,6 +91,7 @@ def health_check():
 
 
 @app.route('/session', methods=['POST'])
+@optional_auth
 def create_session():
     data = request.get_json()
     question = data.get("initial_question")
@@ -113,7 +99,20 @@ def create_session():
     if not question:
         return jsonify({"error": "Initial question is required"}), 400
 
-    session = ChatSession(initial_question=question)
+    # Create session with optional user link
+    session_data = {
+        'initial_question': question, 
+        'status': 'in_progress'
+    }
+    
+    # Link to user if authenticated
+    if g.current_user:
+        session_data['user_id'] = g.current_user.id
+        print(f"[SESSION] Creating session for user: {g.current_user.email}")
+    else:
+        print(f"[SESSION] Creating guest session")
+    
+    session = ChatSession(**session_data)
     prompt_validation = prompt_checker.check_prompt(question)
     is_followup_mode = prompt_validation.research_required
 
@@ -136,6 +135,8 @@ def create_session():
         })
     else:
         session.short_answer = prompt_validation.basic_answer
+        session.status = 'completed'
+        session.completed_at = db.session.execute(db.func.now()).scalar()
         db.session.commit()
         return jsonify({
             "session_id": session.id,
@@ -238,7 +239,7 @@ def download_sites(session_id):
 
         print(f"[THREAD] Done loading for {session_id}", flush=True)
 
-        # ✅ Run vector store logic only after downloads complete
+        # Run vector store logic only after downloads complete
         try:
             vector_store_modification.collect_and_process_files()
             print(f"[THREAD] Vector store update complete", flush=True)
@@ -286,7 +287,7 @@ def deep_research_session(session_id):
         assistant_id=assistant_id,
     )
 
-    # ✅ Save thread_id to session
+    # Save thread_id to session
     session.thread_id = thread_id
     db.session.commit()
 
@@ -322,6 +323,12 @@ def get_formatted_response(session_id):
         # Replace citation placeholders with actual filenames
         formatted_output = format_response.replace_citation_placeholders(latest_message)
 
+        # Save the final answer and mark as completed
+        session.final_answer = formatted_output
+        session.status = 'completed'
+        session.completed_at = db.session.execute(db.func.now()).scalar()
+        db.session.commit()
+
         print(f"[FORMAT] Final output: {formatted_output}", flush=True)
         return jsonify({"formatted": formatted_output})
 
@@ -329,6 +336,95 @@ def get_formatted_response(session_id):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/chat_history', methods=['GET'])
+@require_auth
+def get_chat_history():
+    """Get all completed chat sessions for the authenticated user"""
+    try:
+        # Filter sessions by current user
+        sessions = ChatSession.query.filter_by(
+            status='completed', 
+            user_id=g.current_user.id
+        ).order_by(ChatSession.completed_at.desc()).all()
+        
+        history = []
+        for session in sessions:
+            history.append({
+                "id": session.id,
+                "initial_question": session.initial_question,
+                "created_at": session.created_at.isoformat() if session.created_at else None,
+                "completed_at": session.completed_at.isoformat() if session.completed_at else None,
+                "short_answer": session.short_answer,
+                "preview": (session.final_answer[:200] + "...") if session.final_answer and len(session.final_answer) > 200 else session.final_answer
+            })
+        
+        return jsonify({"history": history})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/chat_history/<session_id>', methods=['GET'])
+@require_auth
+def get_chat_history_details(session_id):
+    """Get full details of a specific chat session for the authenticated user"""
+    try:
+        # Only allow access to user's own sessions
+        session = ChatSession.query.filter_by(
+            id=session_id, 
+            user_id=g.current_user.id
+        ).first()
+        if not session:
+            return jsonify({"error": "Session not found or access denied"}), 404
+        
+        followups_data = [
+            {"question": f.question, "answer": f.answer, "order": f.order}
+            for f in sorted(session.followups, key=lambda x: x.order)
+        ]
+        
+        return jsonify({
+            "id": session.id,
+            "initial_question": session.initial_question,
+            "short_answer": session.short_answer,
+            "final_answer": session.final_answer,
+            "status": session.status,
+            "created_at": session.created_at.isoformat() if session.created_at else None,
+            "completed_at": session.completed_at.isoformat() if session.completed_at else None,
+            "followups": followups_data
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/chat_history/<session_id>', methods=['DELETE'])
+@require_auth
+def delete_chat_history(session_id):
+    """Delete a specific chat session from the authenticated user's history"""
+    try:
+        # Only allow deletion of user's own sessions
+        session = ChatSession.query.filter_by(
+            id=session_id, 
+            user_id=g.current_user.id
+        ).first()
+        if not session:
+            return jsonify({"error": "Session not found or access denied"}), 404
+        
+        # Delete associated followups first
+        FollowUp.query.filter_by(session_id=session_id).delete()
+        
+        # Delete the session
+        db.session.delete(session)
+        db.session.commit()
+        
+        return jsonify({"message": "Chat session deleted successfully"})
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.getenv("PORT", 8080))
+    app.run(debug=True, host="0.0.0.0", port=port)

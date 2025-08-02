@@ -3,8 +3,13 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ChatInput from "@/components/ChatInput";
+import ChatHistory from "@/components/ChatHistory";
+import AuthButton from "@/components/AuthButton";
+import LoadingIcon from "@/components/LoadingIcon";
 import { useChatStore } from "@/stores/chatStores";
 import ReactMarkdown from "react-markdown";
+import { FiClock } from "react-icons/fi";
+import { useSession } from "next-auth/react";
 
 const getFontSizeClass = (length: number) => {
   if (length < 60) return "text-5xl";
@@ -13,19 +18,40 @@ const getFontSizeClass = (length: number) => {
   return "text-2xl";
 };
 
-const createSession = async (initial_question: string) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+const createSession = async (initial_question: string, accessToken?: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+  
   const res = await fetch(`${baseUrl}/session`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({ initial_question }),
   });
   return res.ok ? await res.json() : null;
 };
 
+const loadExistingSession = async (sessionId: string, accessToken?: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+  const headers: Record<string, string> = {};
+  
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+  
+  const res = await fetch(`${baseUrl}/chat_history/${sessionId}`, { headers });
+  return res.ok ? await res.json() : null;
+};
+
 export default function ChatThread() {
   const initialQuestion = useChatStore((s) => s.initialQuestion);
+  const { isLoading, setIsLoading, loadingMessage, setLoadingMessage } = useChatStore();
   const router = useRouter();
+  const params = useParams();
+  const { data: session } = useSession();
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [followUpQuestions, setFollowUpQuestions] = useState<string[]>([]);
@@ -39,29 +65,80 @@ export default function ChatThread() {
   const [finalResult, setFinalResult] = useState<string>("");
   const [isResearching, setIsResearching] = useState(false);
   const [eventSourceCleanup, setEventSourceCleanup] = useState<(() => void) | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [displayQuestion, setDisplayQuestion] = useState<string>("");
+  const [isHistoricalSession, setIsHistoricalSession] = useState(false);
 
-  // On mount, create session
+  // On mount, either create new session or load existing one
   useEffect(() => {
-    if (!initialQuestion) {
-      router.push("/");
+    const urlSessionId = params.id as string;
+    
+    // If we have a URL session ID and no initial question, try to load existing session
+    if (urlSessionId && !initialQuestion) {
+      setIsLoading(true);
+      setLoadingMessage("Loading chat history...");
+      
+      loadExistingSession(urlSessionId, session?.accessToken).then((data) => {
+        if (!data) {
+          router.push("/");
+          return;
+        }
+        
+        // Set the session data from history
+        setSessionId(data.id);
+        setDisplayQuestion(data.initial_question);
+        setShowQuestion(true);
+        setIsHistoricalSession(true);
+        
+        if (data.followups && data.followups.length > 0) {
+          setIsFollowUp(true);
+          setFollowUpQuestions(data.followups.map((f: any) => f.question));
+          setAnswers(data.followups.map((f: any) => f.answer));
+          setCurrentStep(data.followups.length);
+        } else {
+          setIsFollowUp(false);
+          setShortAnswer(data.short_answer);
+        }
+        
+        if (data.final_answer) {
+          setFinalResult(data.final_answer);
+        }
+        
+        setIsLoading(false);
+      });
       return;
     }
+    
+    // If we have an initial question, create a new session
+    if (initialQuestion) {
+      setDisplayQuestion(initialQuestion);
+      setShowQuestion(true);
+      setIsLoading(true);
+      setLoadingMessage("Creating research session...");
 
-    setShowQuestion(true);
+      createSession(initialQuestion, session?.accessToken).then((data) => {
+        if (!data) {
+          setIsLoading(false);
+          return;
+        }
+        setSessionId(data.session_id);
 
-    createSession(initialQuestion).then((data) => {
-      if (!data) return;
-      setSessionId(data.session_id);
-
-      if (data.mode === "followup") {
-        setIsFollowUp(true);
-        setFollowUpQuestions(data.followups || []);
-      } else {
-        setIsFollowUp(false);
-        setShortAnswer(data.short_answer);
-      }
-    });
-  }, [initialQuestion]);
+        if (data.mode === "followup") {
+          setIsFollowUp(true);
+          setFollowUpQuestions(data.followups || []);
+          setIsLoading(false);
+        } else {
+          setIsFollowUp(false);
+          setShortAnswer(data.short_answer);
+          setIsLoading(false);
+        }
+      });
+      return;
+    }
+    
+    // If no initial question and no valid session ID, redirect home
+    router.push("/");
+  }, [initialQuestion, params.id]);
 
   // Cleanup EventSource on component unmount
   useEffect(() => {
@@ -74,14 +151,21 @@ export default function ChatThread() {
 
   const fetchLinks = async (id: string) => {
     const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    setIsLoading(true);
+    setLoadingMessage("Finding relevant sources...");
+    
     const res = await fetch(`${baseUrl}/session/${id}/get_links`);
     
-    if (!res.ok) return;
+    if (!res.ok) {
+      setIsLoading(false);
+      return;
+    }
 
     const data = await res.json();
     const links = Array.from(data.links || []) as string[];
     console.log(links)
     setSearchLinks(links); // still useful if UI uses it
+    setLoadingMessage("Starting site downloads...");
     const cleanup = startSiteDownload(id, links); // ✅ pass directly
     setEventSourceCleanup(() => cleanup);
   };
@@ -100,6 +184,7 @@ export default function ChatThread() {
     eventSource.onmessage = (event) => {
       if (event.data === "__done__") {
         eventSource.close();
+        setIsLoading(false);
         startDeepResearch(id); // 🧠 Begin deep research now
       } else {
         setDownloadedSites((prev) => [...prev, event.data]);
@@ -181,6 +266,21 @@ export default function ChatThread() {
 
   return (
     <main className="flex flex-col items-center min-h-screen bg-zinc-900 text-white px-6 pt-6 pb-40 relative">
+      {/* Top Navigation */}
+      <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-10">
+        {/* Left side - Auth Button */}
+        <AuthButton />
+        
+        {/* Right side - Chat History Button */}
+        <button
+          onClick={() => setShowHistory(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-lg transition-colors"
+        >
+          <FiClock className="w-4 h-4" />
+          History
+        </button>
+      </div>
+
       <style jsx>{`
         @keyframes fadeIn {
           from {
@@ -199,14 +299,14 @@ export default function ChatThread() {
       `}</style>
 
       {/* Initial question display */}
-      {initialQuestion && (
+      {displayQuestion && (
         <div className="w-full max-w-screen-lg text-right mb-4">
           <div
             className={`font-semibold leading-tight whitespace-pre-wrap break-words transition-opacity duration-700 ${
               showQuestion ? "opacity-100" : "opacity-0"
-            } ${getFontSizeClass(initialQuestion.length)}`}
+            } ${getFontSizeClass(displayQuestion.length)}`}
           >
-            {initialQuestion}
+            {displayQuestion}
           </div>
         </div>
       )}
@@ -214,6 +314,12 @@ export default function ChatThread() {
       <hr className="w-full max-w-screen-lg border-zinc-700 my-2" />
 
       <div className="w-full max-w-screen-lg text-left mt-4 space-y-4">
+        {isLoading && (
+          <div className="fade-in">
+            <LoadingIcon message={loadingMessage} size="md" />
+          </div>
+        )}
+        
         {isFollowUp === false && shortAnswer && (
           <p className="text-lg text-zinc-300 whitespace-pre-wrap break-words fade-in">
             {shortAnswer}
@@ -258,8 +364,15 @@ export default function ChatThread() {
             </div>
           ))}
 
-        {/* Progress List */}
-        {downloadedSites.length > 0 && (
+        {/* Show loading during site downloads - only for active sessions */}
+        {!isLoading && !isHistoricalSession && downloadedSites.length > 0 && searchLinks.length > 0 && downloadedSites.length < searchLinks.length && (
+          <div className="fade-in">
+            <LoadingIcon message={`Downloading sites (${downloadedSites.length}/${searchLinks.length})...`} size="sm" />
+          </div>
+        )}
+
+        {/* Progress List - only show for active downloads, not for history */}
+        {downloadedSites.length > 0 && !isHistoricalSession && (
   <div className="mt-8">
   <h3 className="text-white mb-2">Download Progress:</h3>
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -311,11 +424,20 @@ export default function ChatThread() {
 
 )}
 
-{downloadedSites.length > 0 && (
+{((downloadedSites.length > 0 && !isHistoricalSession) || (isHistoricalSession && finalResult)) && (
   <div className="mt-12 fade-in">
+    {/* Show research status header for completed sessions */}
+    {isHistoricalSession && finalResult && (
+      <div className="mb-4">
+        <h3 className="text-white text-lg font-medium mb-2">Research Results</h3>
+        <p className="text-zinc-400 text-sm">
+          This research was completed previously. The answer below includes citations to the sources that were analyzed.
+        </p>
+      </div>
+    )}
     <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-6 shadow-lg text-zinc-300 whitespace-pre-wrap leading-relaxed min-h-[120px]">
       {isResearching && (
-        <p className="text-zinc-500 italic animate-pulse">Analyzing collected content...</p>
+        <LoadingIcon message="Analyzing collected content and generating final answer..." size="md" />
       )}
       {!isResearching && finalResult.trim() === "" && (
         <p className="text-zinc-400 italic">No final result available.</p>
@@ -347,9 +469,15 @@ export default function ChatThread() {
 
       <div className="fixed bottom-0 left-0 w-full px-6 py-4 bg-zinc-900 border-t border-zinc-800 shadow-[0_-4px_12px_rgba(0,0,0,0.3)] z-50">
         <div className="max-w-screen-lg mx-auto">
-          <ChatInput onSend={() => {}} hasMessages={!!initialQuestion} />
+          <ChatInput onSend={() => {}} hasMessages={!!displayQuestion} />
         </div>
       </div>
+
+      {/* Chat History Modal */}
+      <ChatHistory 
+        isOpen={showHistory} 
+        onClose={() => setShowHistory(false)}
+      />
     </main>
   );
 }
