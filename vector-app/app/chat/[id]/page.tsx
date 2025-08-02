@@ -238,5 +238,144 @@ export default function ChatThread() {
     setIsResearching(false);
   };
 
-  // ... (return JSX unchanged)
+  return (
+    <main className="flex flex-col items-center min-h-screen bg-zinc-900 text-white px-6 pt-6 pb-40 relative">
+      {/* Top Navigation */}
+      <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-10">
+        <AuthButton />
+        <button
+          onClick={() => setShowHistory(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-lg transition-colors"
+        >
+          <FiClock className="w-4 h-4" />
+          History
+        </button>
+      </div>
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <LoadingIcon message={loadingMessage || "Loading..."} size="lg" />
+        </div>
+      )}
+
+      {/* Question Display */}
+      {!isLoading && showQuestion && (
+        <div className="w-full max-w-4xl mt-20 mb-8">
+          <div className="text-center mb-8">
+            <h1 className={`font-bold text-white mb-4 ${getFontSizeClass(displayQuestion.length)}`}>
+              {displayQuestion}
+            </h1>
+          </div>
+
+          {/* Short Answer */}
+          {!isFollowUp && shortAnswer && (
+            <div className="bg-zinc-800 rounded-lg p-6 mb-8">
+              <h2 className="text-xl font-semibold mb-4 text-blue-400">Quick Answer:</h2>
+              <p className="text-zinc-300 leading-relaxed">{shortAnswer}</p>
+            </div>
+          )}
+
+          {/* Follow-up Questions */}
+          {isFollowUp && followUpQuestions.length > 0 && (
+            <div className="space-y-6">
+              {followUpQuestions.map((question, idx) => (
+                <div key={idx} className="bg-zinc-800 rounded-lg p-6">
+                  <h3 className="text-lg font-medium mb-4 text-blue-400">
+                    Question {idx + 1}: {question}
+                  </h3>
+                  
+                  {answers[idx] ? (
+                    <div className="bg-zinc-700 rounded p-4">
+                      <p className="text-zinc-300">{answers[idx]}</p>
+                    </div>
+                  ) : idx === currentStep ? (
+                    <div className="space-y-4">
+                      <textarea
+                        id={`answer-${idx}`}
+                        placeholder="Enter your answer..."
+                        className="w-full p-4 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-blue-500"
+                        rows={4}
+                      />
+                      <button
+                        onClick={() => {
+                          const textarea = document.getElementById(`answer-${idx}`) as HTMLTextAreaElement;
+                          if (textarea?.value.trim()) {
+                            submitAnswer(textarea.value.trim(), idx);
+                          }
+                        }}
+                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                      >
+                        Submit Answer
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-zinc-500 italic">Waiting for previous answers...</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Research Progress */}
+          {searchLinks.length > 0 && (
+            <div className="mt-8 bg-zinc-800 rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4 text-green-400">Research Sources Found:</h3>
+              <p className="text-zinc-300 mb-4">Found {searchLinks.length} relevant sources</p>
+              
+              {downloadedSites.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-medium text-zinc-400">Downloaded:</h4>
+                  <div className="max-h-40 overflow-y-auto space-y-1">
+                    {downloadedSites.map((site, idx) => (
+                      <div key={idx} className="text-sm text-zinc-500 font-mono">
+                        {site}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Final Result */}
+          {isResearching && (
+            <div className="mt-8">
+              <LoadingIcon message="Analyzing collected content and generating final answer..." size="md" />
+            </div>
+          )}
+          
+          {finalResult && (
+            <div className="mt-8 bg-zinc-800 rounded-lg p-6">
+              <h3 className="text-xl font-semibold mb-4 text-green-400">Research Results:</h3>
+              <div className="prose prose-invert max-w-none">
+                <ReactMarkdown
+                  components={{
+                    a: ({ children, ...props }) => (
+                      <a
+                        {...props}
+                        className="ml-1 inline-block text-xs font-medium px-2 py-0.5 bg-zinc-700 text-blue-300 rounded-full hover:bg-zinc-600 transition-colors"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {children}
+                      </a>
+                    ),
+                  }}
+                >
+                  {finalResult}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Chat History Modal */}
+      <ChatHistory 
+        isOpen={showHistory} 
+        onClose={() => setShowHistory(false)}
+      />
+    </main>
+  );
 }
