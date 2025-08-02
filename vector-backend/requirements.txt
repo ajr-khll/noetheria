@@ -13,5 +13,7 @@ google-auth
 google-auth-oauthlib
 readability-lxml
 lxml
+reportlab
+httpx
 
 
