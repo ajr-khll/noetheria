@@ -44,11 +44,20 @@ CORS(app, origins=allowed_origins)
 db.init_app(app)
 migrate = Migrate(app, db)
 
-with open("vector_store_id.txt", "r") as f:
-    vector_store_id = f.read().strip()
+# Handle missing files gracefully in production
+try:
+    with open("vector_store_id.txt", "r") as f:
+        vector_store_id = f.read().strip()
+except FileNotFoundError:
+    print("⚠️ vector_store_id.txt not found - some features may not work")
+    vector_store_id = "default-store-id"
 
-with open("assistant_id.txt", "r") as f:
-    assistant_id = f.read().strip()
+try:
+    with open("assistant_id.txt", "r") as f:
+        assistant_id = f.read().strip()
+except FileNotFoundError:
+    print("⚠️ assistant_id.txt not found - some features may not work")
+    assistant_id = "default-assistant-id"
 
 # Global dictionary to store queues for each session's streaming progress
 site_progress_queues = {}  # session_id -> Queue
@@ -62,6 +71,16 @@ def clean_query(q: str) -> str:
     # Removes leading numbering and surrounding quotes
     q = re.sub(r'^\d+\.\s*', '', q)
     return q.strip().strip('"')
+
+
+@app.route('/')
+def health_check():
+    """Health check endpoint for Railway deployment"""
+    return jsonify({
+        "status": "healthy",
+        "app": "Vector Backend",
+        "version": "1.0.0"
+    })
 
 
 @app.route('/session', methods=['POST'])
