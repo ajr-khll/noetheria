@@ -14,7 +14,7 @@ import deep_research
 import vector_store_modification
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue
-from flask_cors import CORS
+# from flask_cors import CORS  # Disabled to avoid duplicate headers
 import sys
 import time
 import format_response
@@ -42,11 +42,7 @@ if frontend_url:
 else:
     print("⚠️ FRONTEND_URL not set - add your Vercel URL to Railway environment variables")
 
-CORS(app, 
-     origins=allowed_origins,
-     allow_headers=['Content-Type', 'Authorization'],
-     methods=['GET', 'POST', 'OPTIONS'],
-     supports_credentials=True)
+# CORS handled manually below to avoid duplicate headers
 
 # Manual CORS handler for preflight requests
 @app.before_request
