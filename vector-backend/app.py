@@ -22,11 +22,13 @@ import format_response
 from flask_migrate import Migrate
 from openai import OpenAI
 from dotenv import load_dotenv
+
 load_dotenv()
+
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-# Initialize Flask app and database
 
+# Initialize Flask app and database
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///chat_sessions.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -44,9 +46,6 @@ else:
     print("[WARNING] FRONTEND_URL not set - add your Vercel URL to Railway environment variables")
 
 CORS(app, origins=allowed_origins, supports_credentials=True)
-# CORS handled manually below to avoid duplicate headers
-
-
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -422,7 +421,6 @@ def delete_chat_history(session_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-
 
 
 if __name__ == "__main__":
