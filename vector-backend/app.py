@@ -48,6 +48,25 @@ CORS(app,
      methods=['GET', 'POST', 'OPTIONS'],
      supports_credentials=True)
 
+# Manual CORS handler for preflight requests
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = jsonify()
+        response.headers.add("Access-Control-Allow-Origin", "https://vector-ecru.vercel.app")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response
+
+@app.after_request
+def after_request(response):
+    response.headers.add("Access-Control-Allow-Origin", "https://vector-ecru.vercel.app")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    response.headers.add("Access-Control-Allow-Credentials", "true")
+    return response
+
 db.init_app(app)
 migrate = Migrate(app, db)
 
