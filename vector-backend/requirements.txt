@@ -15,7 +15,7 @@ readability-lxml
 lxml
 reportlab
 httpx
-transformers==4.38.2
+transformers==4.25.1
 sentence-transformers==2.2.2
 huggingface-hub==0.16.4
 networkx
