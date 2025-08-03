@@ -1,0 +1,198 @@
+{
+  "processed_files": [
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___bmcmededuc.biomedcentral.com_articles_10.1186_s12909-023-04698-z.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___pmc.ncbi.nlm.nih.gov_articles_PMC5819974_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___pmc.ncbi.nlm.nih.gov_articles_PMC8285156_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.foreseemed.com_artificial-intelligence-in-healthcare.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.iqvia.com_blogs_2024_02_the-future-of-ai-in-healthcare.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___bmcmededuc.biomedcentral.com_articles_10.1186_s12909-023-04698-z.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___pmc.ncbi.nlm.nih.gov_articles_PMC5819974_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___pmc.ncbi.nlm.nih.gov_articles_PMC8285156_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.foreseemed.com_artificial-intelligence-in-healthcare.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.iqvia.com_blogs_2024_02_the-future-of-ai-in-healthcare.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___adnoc.ae_en_news-and-media_press-releases_2024_adnoc-to-close-acquisition-of-controlling-stake-in-fertiglobe.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.adnoc.ae_en_incountry-value_incountry-value-strategic-overview.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.adnoc.ae_en_news-and-media_press-releases_2023_adnoc-closes-acquisition-of-249-stake-in-omv.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.adnoc.ae_en_News-and-Media_Press-Releases_2023_ADNOC-to-Acquire-30-Equity-Stake-in-Absheron-Gas-Field.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.agbi.com_oil-and-gas_2025_02_adnoc-drilling-plans-further-acquisitions-in-us-and-europe_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.agbi.com_opinion_oil-and-gas_2024_02_robin-mills-adnocs-acqusition-strategy_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.energyconnects.com_news_gas-lng_2025_february_adnoc-successfully-completes-2-84-billion-marketed-offering-of-adnoc-gas-shares_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.marketresearch.com_GlobalData-v3648_ADNOC-Distribution-ADNOCDIST-Financial-Strategic-41712937_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.offshore-technology.com_news_adnoc-stake-adnoc-gas-expansions_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.offshore-technology.com_news_adnoc-to-pursue-50bn-acquisitions_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.worldoil.com_news_2025_3_7_adnoc-looks-to-purchase-u-s-natural-gas-fields-as-part-of-expansion-strategy_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___adnoc.ae_en_news-and-media_press-releases_2024_adnoc-to-close-acquisition-of-controlling-stake-in-fertiglobe.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.adnoc.ae_en_incountry-value_incountry-value-strategic-overview.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.adnoc.ae_en_news-and-media_press-releases_2023_adnoc-closes-acquisition-of-249-stake-in-omv.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.adnoc.ae_en_News-and-Media_Press-Releases_2023_ADNOC-to-Acquire-30-Equity-Stake-in-Absheron-Gas-Field.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.agbi.com_oil-and-gas_2025_02_adnoc-drilling-plans-further-acquisitions-in-us-and-europe_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.agbi.com_opinion_oil-and-gas_2024_02_robin-mills-adnocs-acqusition-strategy_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.energyconnects.com_news_gas-lng_2025_february_adnoc-successfully-completes-2-84-billion-marketed-offering-of-adnoc-gas-shares_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.marketresearch.com_GlobalData-v3648_ADNOC-Distribution-ADNOCDIST-Financial-Strategic-41712937_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.offshore-technology.com_news_adnoc-stake-adnoc-gas-expansions_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.offshore-technology.com_news_adnoc-to-pursue-50bn-acquisitions_.pdf",
+    "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.worldoil.com_news_2025_3_7_adnoc-looks-to-purchase-u-s-natural-gas-fields-as-part-of-expansion-strategy_.pdf"
+  ],
+  "file_hashes": {
+    "4f981d8197a8ad621d5f0e0452fcde0a481ec1564a0eef85ad5474b0c81b9506": {
+      "file_id": "file-NEtGM9PiQKrLK9Bj7en2Rn",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___bmcmededuc.biomedcentral.com_articles_10.1186_s12909-023-04698-z.pdf",
+      "processed_time": 1754179759.5578609
+    },
+    "32240bd70011d1878c5b082641b34755ba66434940367cb545992d2d098fb1e0": {
+      "file_id": "file-Bue6ceeQFkpRGi1wxtiW9x",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___pmc.ncbi.nlm.nih.gov_articles_PMC5819974_.pdf",
+      "processed_time": 1754179760.8164423
+    },
+    "dfea60238ab529366a599f9665d209c08ec8250a866e1fbbf9aa24c2452756e1": {
+      "file_id": "file-ARMUtvEtQwiBUdKFFCS6sz",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___pmc.ncbi.nlm.nih.gov_articles_PMC8285156_.pdf",
+      "processed_time": 1754179762.1476977
+    },
+    "585a13ee59fc2788f749b4aaa017d0cd4eb4835692ccc80ab9cd753459c9cb4b": {
+      "file_id": "file-W7Y2TThhtRTrZGUF84CcuT",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.foreseemed.com_artificial-intelligence-in-healthcare.pdf",
+      "processed_time": 1754179763.5603716
+    },
+    "c59b40d25338e85894d467a1936138614bf69c03c42ec20ccaf42df964250f48": {
+      "file_id": "file-7DnyGxnm6VH5gcyX7fC8ue",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.iqvia.com_blogs_2024_02_the-future-of-ai-in-healthcare.pdf",
+      "processed_time": 1754179764.9366488
+    },
+    "3324fb65bea7139415f307942b71a0516c65f1ef5934f9d41884d8527037dd44": {
+      "file_id": "file-2QAvaTwEmMkEGdDiLymSbP",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___bmcmededuc.biomedcentral.com_articles_10.1186_s12909-023-04698-z.pdf",
+      "processed_time": 1754179766.7638679
+    },
+    "6ece0503d1768747ba28f4f126746611eedfa557620bba712a67b2542d7449aa": {
+      "file_id": "file-4Pcjy2XKGcs67Tr9WtXKwU",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___pmc.ncbi.nlm.nih.gov_articles_PMC5819974_.pdf",
+      "processed_time": 1754179767.877245
+    },
+    "f3d0cf4207fb639beb7b7156f7c1b88880a92a0019b73d0c47fe1029a2fca6f3": {
+      "file_id": "file-W6f1NTLjGGvw3WKXmjokcf",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___pmc.ncbi.nlm.nih.gov_articles_PMC8285156_.pdf",
+      "processed_time": 1754179769.118596
+    },
+    "af10312262f13a1cb3ac1fefb9a0034a1aed2c5470f7f569a7501a9a36f4c109": {
+      "file_id": "file-HVMucuBeJ6ZTTdU4QF76oB",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.foreseemed.com_artificial-intelligence-in-healthcare.pdf",
+      "processed_time": 1754179770.7591617
+    },
+    "a172f36fe3e0acfccd136e97240a1bd8fddf748d72da5a61be9c1c52ebb32a3c": {
+      "file_id": "file-JKsz8JcdizPheEaALkmixe",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.iqvia.com_blogs_2024_02_the-future-of-ai-in-healthcare.pdf",
+      "processed_time": 1754179771.7691972
+    },
+    "3bb2e1dcd493b15038fe7b14480f37e11e51e341248c096485d33701a58e4689": {
+      "file_id": "file-4btk8ui8JD5jMTBqRXj3TT",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___adnoc.ae_en_news-and-media_press-releases_2024_adnoc-to-close-acquisition-of-controlling-stake-in-fertiglobe.pdf",
+      "processed_time": 1754180284.9116805
+    },
+    "677853621038ef970a804d79d0c6f29e60f3649abd650a4774effc303eba0599": {
+      "file_id": "file-BKJfUJbWfLvXwbeepAYbY3",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.adnoc.ae_en_incountry-value_incountry-value-strategic-overview.pdf",
+      "processed_time": 1754180286.294636
+    },
+    "a1f9aa38743e24b530f0caa2a71c7cceb6285e4506468fbd733a923c3112df0d": {
+      "file_id": "file-LVw3Ju7GrEo6a357qyKA5e",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.adnoc.ae_en_news-and-media_press-releases_2023_adnoc-closes-acquisition-of-249-stake-in-omv.pdf",
+      "processed_time": 1754180287.3759716
+    },
+    "5eb1506a5889addcdcce947025e1174500c757572158c82f573235639e3abae0": {
+      "file_id": "file-45bXAqrqMop8eyQkYwRxDj",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.adnoc.ae_en_News-and-Media_Press-Releases_2023_ADNOC-to-Acquire-30-Equity-Stake-in-Absheron-Gas-Field.pdf",
+      "processed_time": 1754180288.5510223
+    },
+    "510274f5a61462f53132067f034fa95346fe28fd1e937a1411dcb287daa45b51": {
+      "file_id": "file-HmWY1cyyfJA4pimMr6J7fK",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.agbi.com_oil-and-gas_2025_02_adnoc-drilling-plans-further-acquisitions-in-us-and-europe_.pdf",
+      "processed_time": 1754180289.6249843
+    },
+    "c7c2c07448992b113a5b12b647cf5251ab0bd4fdb6b904c90b21bb1716d3f370": {
+      "file_id": "file-UPMESvgE2x1RT3CciXfrb4",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.agbi.com_opinion_oil-and-gas_2024_02_robin-mills-adnocs-acqusition-strategy_.pdf",
+      "processed_time": 1754180290.7757046
+    },
+    "af396ca4519f14ed20348e1c9dfa79719fee51ead3e11c27f575c039d5b4061f": {
+      "file_id": "file-RUP2kDMFtpCpjy3inpmKxr",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.energyconnects.com_news_gas-lng_2025_february_adnoc-successfully-completes-2-84-billion-marketed-offering-of-adnoc-gas-shares_.pdf",
+      "processed_time": 1754180292.2581747
+    },
+    "e6e541ab604befee1a2a1da5fa5a63a0a1ef09347f9d67395fbf90a19d4bcc47": {
+      "file_id": "file-XCj78WEvDQSS5WjoytvpS4",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.marketresearch.com_GlobalData-v3648_ADNOC-Distribution-ADNOCDIST-Financial-Strategic-41712937_.pdf",
+      "processed_time": 1754180293.5860639
+    },
+    "11522de6e7c9ad16cf828e6d4111c62fd1805bbe8c19ef6765dd20b51c480736": {
+      "file_id": "file-8NzVYvn6t22TCQSHtDzAwN",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.offshore-technology.com_news_adnoc-stake-adnoc-gas-expansions_.pdf",
+      "processed_time": 1754180294.759666
+    },
+    "f924438b33c899d270a10cfeca428f485b2f6d74d2408380e33d8fdfcbf3d351": {
+      "file_id": "file-GBVD3x8pUzpqg9cqNJYtob",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.offshore-technology.com_news_adnoc-to-pursue-50bn-acquisitions_.pdf",
+      "processed_time": 1754180295.900426
+    },
+    "443db966e8323c4416ed8da8021597dd483efa9689f86bd75a9690faf844d777": {
+      "file_id": "file-LsPsEoLHymmsU9c6LRa5sz",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\downloaded_pdfs\\https___www.worldoil.com_news_2025_3_7_adnoc-looks-to-purchase-u-s-natural-gas-fields-as-part-of-expansion-strategy_.pdf",
+      "processed_time": 1754180297.1962693
+    },
+    "813d718e0b18719d5cbad87e407088d86a803af72da3f0d53f45979a5bfe5e63": {
+      "file_id": "file-FWEkW6dWwmfLbGcTudBHEw",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___adnoc.ae_en_news-and-media_press-releases_2024_adnoc-to-close-acquisition-of-controlling-stake-in-fertiglobe.pdf",
+      "processed_time": 1754180298.2713017
+    },
+    "82bbeeac04f5519c20dc65588f22eff48ec34b96a9c83105f66104b79a166336": {
+      "file_id": "file-G54K7ZrprVetUvtoCw86Ri",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.adnoc.ae_en_incountry-value_incountry-value-strategic-overview.pdf",
+      "processed_time": 1754180299.4556148
+    },
+    "31c21ecceee4916e31124d6b9d7f6a874ae92b3eab6f4e42a3381a1b47e35e5f": {
+      "file_id": "file-H6dk3FRqMdkU9JyNX8R3si",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.adnoc.ae_en_news-and-media_press-releases_2023_adnoc-closes-acquisition-of-249-stake-in-omv.pdf",
+      "processed_time": 1754180301.1625762
+    },
+    "d9d5305eee9e80857aac295abb6a1b2384b74823f4bc1f791d1f5902988e384e": {
+      "file_id": "file-XbB2Jw2k5qfsgvH82m2hX4",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.adnoc.ae_en_News-and-Media_Press-Releases_2023_ADNOC-to-Acquire-30-Equity-Stake-in-Absheron-Gas-Field.pdf",
+      "processed_time": 1754180302.7630622
+    },
+    "43ed3915f2abcc25a364f59894009c26c5e231b012532031fd0a2dbc71e3d6e1": {
+      "file_id": "file-BAcTpf8asr7w2x3XUNgw8k",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.agbi.com_oil-and-gas_2025_02_adnoc-drilling-plans-further-acquisitions-in-us-and-europe_.pdf",
+      "processed_time": 1754180303.8587422
+    },
+    "c7c3fe9d4df73fbc06e8f0cdcb8e5327bda72edca3eb5201aa83bf764db881be": {
+      "file_id": "file-TjDWq63fVY6gDHxpUJVvjy",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.agbi.com_opinion_oil-and-gas_2024_02_robin-mills-adnocs-acqusition-strategy_.pdf",
+      "processed_time": 1754180305.3277004
+    },
+    "e9d14ce7f3f5224b71ad1f0a90ae11aa01d69f7e6cb8280e4c16daa49746f4b4": {
+      "file_id": "file-XQtZSeK7nHDBirwMsi9tVX",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.energyconnects.com_news_gas-lng_2025_february_adnoc-successfully-completes-2-84-billion-marketed-offering-of-adnoc-gas-shares_.pdf",
+      "processed_time": 1754180306.7560706
+    },
+    "e1a0a8dd339640b20124d961d33095193593480ce5c7750ad357868b220da0c0": {
+      "file_id": "file-6sJBRMi2K74oD2H14xVVUK",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.marketresearch.com_GlobalData-v3648_ADNOC-Distribution-ADNOCDIST-Financial-Strategic-41712937_.pdf",
+      "processed_time": 1754180308.3566365
+    },
+    "ea54eeb4c17963cc7ffae67764c2a9ea79cf528a153180672f0015cbf0ceffb0": {
+      "file_id": "file-VVfidbGH39hvxQjdSxsGGq",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.offshore-technology.com_news_adnoc-stake-adnoc-gas-expansions_.pdf",
+      "processed_time": 1754180309.4525917
+    },
+    "515f22217da7de51ccfb03685b3cea6321055fd3e00b87268114d869041d91e4": {
+      "file_id": "file-WykYu2QFQ5ZtdbY8gAWpAj",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.offshore-technology.com_news_adnoc-to-pursue-50bn-acquisitions_.pdf",
+      "processed_time": 1754180310.767169
+    },
+    "6b371dc47733bcae8fbd30ae80ccff2d24ffa3a71b57fff53327d2efa1b9c94b": {
+      "file_id": "file-Ez6ZCBMd52ZMzqQEyiPX1u",
+      "original_path": "C:\\Users\\arjun\\OneDrive\\Documents\\vector\\vector-backend\\site_texts\\https___www.worldoil.com_news_2025_3_7_adnoc-looks-to-purchase-u-s-natural-gas-fields-as-part-of-expansion-strategy_.pdf",
+      "processed_time": 1754180312.2276127
+    }
+  }
+}

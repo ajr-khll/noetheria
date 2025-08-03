@@ -15,5 +15,6 @@ readability-lxml
 lxml
 reportlab
 httpx
-
-
+transformers==4.38.2
+sentence-transformers==2.2.2
+networkx

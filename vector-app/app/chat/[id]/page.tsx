@@ -57,6 +57,7 @@ export default function ChatThread() {
   const [followUpQuestions, setFollowUpQuestions] = useState<string[]>([]);
   const [showQuestion, setShowQuestion] = useState(false);
   const [isFollowUp, setIsFollowUp] = useState<boolean | null>(null);
+  const [sessionCreated, setSessionCreated] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [shortAnswer, setShortAnswer] = useState<string | null>(null);
@@ -109,16 +110,18 @@ export default function ChatThread() {
       return;
     }
     
-    // If we have an initial question, create a new session
-    if (initialQuestion) {
+    // If we have an initial question and haven't created a session yet, create a new session
+    if (initialQuestion && !sessionCreated) {
       setDisplayQuestion(initialQuestion);
       setShowQuestion(true);
       setIsLoading(true);
       setLoadingMessage("Creating research session...");
+      setSessionCreated(true);
 
       createSession(initialQuestion, session?.accessToken).then((data) => {
         if (!data) {
           setIsLoading(false);
+          setSessionCreated(false); // Reset on failure
           return;
         }
         setSessionId(data.session_id);
@@ -132,13 +135,22 @@ export default function ChatThread() {
           setShortAnswer(data.short_answer);
           setIsLoading(false);
         }
+      }).catch((error) => {
+        console.error("Failed to create session:", error);
+        setIsLoading(false);
+        setSessionCreated(false); // Reset on error
       });
       return;
     }
     
     // If no initial question and no valid session ID, redirect home
     router.push("/");
-  }, [initialQuestion, params.id]);
+  }, [initialQuestion, params.id, sessionCreated, session?.accessToken]);
+
+  // Reset session creation flag when initial question changes
+  useEffect(() => {
+    setSessionCreated(false);
+  }, [initialQuestion]);
 
   // Cleanup EventSource on component unmount
   useEffect(() => {

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { FiClock, FiTrash2, FiSearch } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface ChatHistoryItem {
   id: string;
@@ -24,6 +25,11 @@ export default function ChatHistory({ onSelectChat, isOpen, onClose }: ChatHisto
   const [history, setHistory] = useState<ChatHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState<{isOpen: boolean, sessionId: string, question: string}>({
+    isOpen: false,
+    sessionId: "",
+    question: ""
+  });
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -56,25 +62,38 @@ export default function ChatHistory({ onSelectChat, isOpen, onClose }: ChatHisto
     }
   };
 
-  const deleteChat = async (sessionId: string, e: React.MouseEvent) => {
+  const showDeleteConfirm = (sessionId: string, question: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this chat?")) return;
-    if (!session?.accessToken) return;
+    setDeleteConfirm({
+      isOpen: true,
+      sessionId,
+      question
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!session?.accessToken || !deleteConfirm.sessionId) return;
 
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-      const res = await fetch(`${baseUrl}/chat_history/${sessionId}`, {
+      const res = await fetch(`${baseUrl}/chat_history/${deleteConfirm.sessionId}`, {
         method: "DELETE",
         headers: {
           'Authorization': `Bearer ${session.accessToken}`,
         },
       });
       if (res.ok) {
-        setHistory(prev => prev.filter(item => item.id !== sessionId));
+        setHistory(prev => prev.filter(item => item.id !== deleteConfirm.sessionId));
       }
     } catch (error) {
       console.error("Failed to delete chat:", error);
+    } finally {
+      setDeleteConfirm({ isOpen: false, sessionId: "", question: "" });
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ isOpen: false, sessionId: "", question: "" });
   };
 
   const handleChatSelect = (sessionId: string) => {
@@ -185,7 +204,7 @@ export default function ChatHistory({ onSelectChat, isOpen, onClose }: ChatHisto
                     </div>
                     
                     <button
-                      onClick={(e) => deleteChat(item.id, e)}
+                      onClick={(e) => showDeleteConfirm(item.id, item.initial_question, e)}
                       className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-400 transition-all p-2"
                       title="Delete chat"
                     >
@@ -198,6 +217,17 @@ export default function ChatHistory({ onSelectChat, isOpen, onClose }: ChatHisto
           )}
         </div>
       </div>
+      
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        title="Delete Chat"
+        message={`Are you sure you want to delete "${deleteConfirm.question}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        variant="danger"
+      />
     </div>
   );
 }

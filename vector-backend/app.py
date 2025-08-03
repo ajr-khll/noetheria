@@ -28,6 +28,12 @@ load_dotenv()
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+# Preload embedding model for faster search performance
+print("[STARTUP] Preloading SentenceTransformer model...")
+from custom_search_algorithm.embedding import get_model
+get_model()
+print("[STARTUP] Model preloaded successfully")
+
 # Initialize Flask app and database
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///chat_sessions.db"
@@ -194,14 +200,17 @@ def get_links(session_id):
     queries = [clean_query(q) for q in raw_queries]
 
     all_links = set()
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = [executor.submit(fetch_links, q) for q in queries]
-        for future in as_completed(futures):
-            try:
-                links = future.result()
-                all_links.update(links)
-            except Exception as e:
-                print(f"[ERROR] During fetch: {str(e)}", flush=True)
+    # Process queries sequentially with 1-second delays for Brave API rate limiting
+    for i, query in enumerate(queries):
+        if i > 0:  # Add delay before all requests except the first
+            print(f"[RATE LIMIT] Waiting 1 second before next search...", flush=True)
+            time.sleep(1)
+        
+        try:
+            links = fetch_links(query)
+            all_links.update(links)
+        except Exception as e:
+            print(f"[ERROR] During fetch for '{query}': {str(e)}", flush=True)
 
     return jsonify({"links": list(all_links)})
 
