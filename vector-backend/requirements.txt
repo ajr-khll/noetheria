@@ -17,4 +17,5 @@ reportlab
 httpx
 transformers==4.38.2
 sentence-transformers==2.2.2
+huggingface-hub==0.16.4
 networkx
