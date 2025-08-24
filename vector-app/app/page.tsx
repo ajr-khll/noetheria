@@ -44,6 +44,11 @@ export default function Home() {
         isOpen={showHistory} 
         onClose={() => setShowHistory(false)}
       />
+
+      {/* Created by footer */}
+      <div className="absolute bottom-6 right-6 text-zinc-500 text-sm">
+        Created by Arjun Khullar
+      </div>
     </main>
   );
 }
